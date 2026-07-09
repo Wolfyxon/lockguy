@@ -1,0 +1,9 @@
+# Dirs
+.vscode/
+
+# Files
+/lockguy
+
+# Formats
+*.tmp
+*.out
