@@ -10,6 +10,10 @@ SRC := src
 build:
 	$(CC) $(CFLAGS) $(SRC)/*.h $(SRC)/*.c -o $(OUT_PREFIX)$(OUT_NAME)
 
+test:
+	CFLAGS="-DENABLE_TESTS" make build
+	./$(OUT_NAME)
+
 run: build
 	./$(OUT_NAME)
 
