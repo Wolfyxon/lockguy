@@ -10,10 +10,12 @@
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 #include <X11/Xutil.h>
+#include <X11/keysym.h>
 #include <X11/keysymdef.h>
 
 #include "context.h"
 #include "utils.h"
+#include "auth.h"
 
 #define X11_ALL_POINTER_EVENTS ( \
     ButtonPressMask | ButtonReleaseMask |\

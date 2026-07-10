@@ -39,6 +39,14 @@ void strcat_safe(char *dest, const char *src, size_t dest_size) {
     dest[dest_len + src_len] = '\0';
 }
 
+void strcut_back(char *str, size_t n) {
+    size_t len = strlen(str);
+    
+    for(size_t i = 0; i < n; i++) {
+        str[len - 1 - i] = '\0';
+    }
+}
+
 millis_t get_time_ms() {
     struct timeval time;
     gettimeofday(&time, NULL);

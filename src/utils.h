@@ -12,6 +12,8 @@ bool is_flag(const char *arg, const char *flag_name);
 
 void zero_buf(char *buf, size_t len);
 void zero_str(char *str);
+
 void strcat_safe(char *dest, const char *src, size_t dest_size);
+void strcut_back(char *str, size_t n);
 
 millis_t get_time_ms();

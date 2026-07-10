@@ -122,15 +122,32 @@ void x11_handle_next_event(AppState *state) {
     XNextEvent(ctx.display, &ev);
     
     if(ev.type == KeyPress) {
-        if(ev.xkey.keycode == 9 && (state->mock || state->allow_escape)) { // esc. Who knows where keycodes are defined
+        KeySym ks = XLookupKeysym(&ev.xkey, 0);
+        
+        if(ks == XK_Escape && (state->mock || state->allow_escape)) {
             exit(0);
         }
 
+        if(ks == XK_Return) {
+            AuthStatus status = auth_current_user(state->password_buf);
+            clear_password(state);
+
+            if(status == AUTH_SUCCESS) {                
+                exit(0);
+            }
+
+            return;
+        }
+
+        if(ks == XK_BackSpace) {
+            strcut_back(state->password_buf, 1);
+            return;
+        }
+        
         // Text input for password
 
         char input_buf[8] = {0};
-        KeySym _key_sym = NoSymbol;
-        size_t len = XLookupString(&ev.xkey, input_buf, sizeof(input_buf) - 1, &_key_sym, NULL);
+        size_t len = XLookupString(&ev.xkey, input_buf, sizeof(input_buf) - 1, NULL, NULL);
 
         if(len != 0) {
             strcat_safe(state->password_buf, input_buf, state->password_max_len);
