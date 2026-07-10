@@ -8,17 +8,20 @@ int main(int argc, char **argv) {
     };
     
     process_args(&state, argc, argv);
-
-    if(state.allow_escape && !state.mock) {
-        fprintf(stderr, "warning: Lock screen is bypassable using Escape! Do not use unless testing\n");
-    }
-
-    if(state.allow_escape && state.mock) {
-        fprintf(stderr, "warning: --mock already enables --allow-esc. Remove --allow-esc.\n");
-    }
+    process_warnings(&state);
 
     x11_init(&state);
     x11_loop(&state);
+}
+
+void process_warnings(AppState *state) {
+    if(state->allow_escape && !state->mock) {
+        fprintf(stderr, "warning: Lock screen is bypassable using Escape! Do not use unless testing\n");
+    }
+
+    if(state->allow_escape && state->mock) {
+        fprintf(stderr, "warning: --mock already enables --allow-esc. Remove --allow-esc.\n");
+    }
 }
 
 void process_args(AppState *state, int argc, char **argv) {

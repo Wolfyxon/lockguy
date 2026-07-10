@@ -14,6 +14,7 @@
 
 int main(int argc, char **argv);
 void process_args(AppState *ctx, int argc, char **argv);
+void process_warnings(AppState *state);
 
 void print_help();
 
