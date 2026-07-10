@@ -25,6 +25,20 @@ void zero_str(char *str) {
     return zero_buf(str, strlen(str));
 }
 
+void strcat_safe(char *dest, const char *src, size_t dest_size) {
+    if (dest_size == 0) return;
+    
+    size_t dest_len = strlen(dest);
+    size_t src_len = strlen(src);
+    
+    if (src_len >= dest_size - dest_len) {
+        src_len = dest_size - dest_len - 1; 
+    }
+
+    memcpy(&dest[dest_len], src, src_len);
+    dest[dest_len + src_len] = '\0';
+}
+
 millis_t get_time_ms() {
     struct timeval time;
     gettimeofday(&time, NULL);
