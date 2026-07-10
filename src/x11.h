@@ -3,12 +3,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <math.h>
+
+#include <unistd.h>
 
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 #include <X11/keysymdef.h>
 
 #include "context.h"
+#include "utils.h"
 
 #define X11_ALL_POINTER_EVENTS ( \
     ButtonPressMask | ButtonReleaseMask |\
@@ -20,3 +24,5 @@
 
 void x11_init(AppState *state);
 void x11_loop(AppState *state);
+void x11_handle_next_event(AppState *state);
+void x11_draw(AppState *state);

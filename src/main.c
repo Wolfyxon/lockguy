@@ -6,7 +6,7 @@ int main(int argc, char **argv) {
         .mock = false,
         .allow_escape = true
     };
-
+    
     process_args(&state, argc, argv);
 
     if(state.allow_escape && !state.mock) {

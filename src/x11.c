@@ -30,8 +30,14 @@ void x11_init(AppState *state) {
         vmask, &attr
     );
     
+    Atom wm_delete_window = XInternAtom(disp, "WM_DELETE_WINDOW", False);
+
+    XSetWMProtocols(disp, w, &wm_delete_window, 1);
+    XSelectInput(disp, w, ExposureMask | KeyPressMask); //useless.
+
     XSetWindowBackground(disp, w, 0x000000);
     XMapWindow(disp, w);
+    XRaiseWindow(disp, w);
     
     if(!state->mock) {
         int grab_kb = XGrabKeyboard(disp, w, true, GrabModeAsync, GrabModeAsync, CurrentTime);
@@ -54,40 +60,81 @@ void x11_init(AppState *state) {
         XConfigureWindow(disp, w, CWStackMode, &changes);
     }
 
-    Atom wm_delete_window = XInternAtom(disp, "WM_DELETE_WINDOW", False);
-
-    XSetWMProtocols(disp, w, &wm_delete_window, 1);
-    XSelectInput(disp, w, ExposureMask | KeyPressMask);
+    state->ctx.x11.gc = DefaultGC(disp, screen);
 
     state->ctx.x11.display = disp;
     state->ctx.x11.window = w;
     state->ctx.x11.wm_delete_window = wm_delete_window;
+
+    x11_draw(state);
 }
 
 void x11_loop(AppState *state) {
     X11Context ctx = state->ctx.x11;
 
-    XEvent ev;
+    // Values here don't seem to matter. They only delay the start of the X11 connection. 
+    // No matter how high the values are, events are stil received instantly 
+    // and the render loop runs continously without any lag
+    struct timeval event_timeout_timer = {
+        .tv_sec = 0,
+        .tv_usec = 5000
+    };
+
+    int x11_socket = ConnectionNumber(ctx.display);
+    fd_set events_fd;
 
     while(1) {
-        XNextEvent(ctx.display, &ev);
-        XRaiseWindow(ctx.display, ctx.window);
-        
-        if(ev.type == Expose) {
-            // render stuff here
-            
+        FD_ZERO(&events_fd);
+        FD_SET(x11_socket, &events_fd);
+
+        int received_events = select(
+            x11_socket + 1, 
+            &events_fd, 
+            NULL, 
+            NULL, 
+            &event_timeout_timer
+        );
+
+        if(received_events == 0) { // Timeout. No pending events.
+            x11_draw(state);
+            usleep(1600);
         }
 
-        if(ev.type == KeyPress) {
-            if(ev.xkey.keycode == 9 && (state->mock || state->allow_escape)) { // esc. Who knows where keycodes are defined
-                exit(0);
-            }
+        if(!state->mock) {
+            XRaiseWindow(ctx.display, ctx.window);
         }
 
-        if(ev.type == ClientMessage) {
-            if(ev.xclient.data.l[0] == ctx.wm_delete_window) {
-                exit(0);
-            }
+        while(XPending(ctx.display)) {
+            x11_handle_next_event(state);
         }
     }
+}
+
+void x11_handle_next_event(AppState *state) {
+    X11Context ctx = state->ctx.x11;
+    XEvent ev;
+
+    XNextEvent(ctx.display, &ev);
+    
+    if(ev.type == KeyPress) {
+        if(ev.xkey.keycode == 9 && (state->mock || state->allow_escape)) { // esc. Who knows where keycodes are defined
+            exit(0);
+        }
+    }
+
+    if(ev.type == ClientMessage) {
+        if(ev.xclient.data.l[0] == ctx.wm_delete_window) {
+            exit(0);
+        }
+    }
+}
+
+void x11_draw(AppState *state) {
+    X11Context ctx = state->ctx.x11;
+
+    XClearWindow(ctx.display, ctx.window);
+
+    XSetForeground(ctx.display, ctx.gc, 0xFFFFFF);
+
+    XDrawString(ctx.display, ctx.window, ctx.gc, 100.0 +((float)100.0 * (float)sin(get_time_ms() * 0.01)), 100, "Among us", 8);
 }

@@ -11,6 +11,7 @@ typedef struct {
     Display *display;
     Window window;
     Atom wm_delete_window;
+    GC gc;
 } X11Context;
 
 typedef union {
