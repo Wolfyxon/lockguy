@@ -40,24 +40,7 @@ void x11_init(AppState *state) {
     XRaiseWindow(disp, w);
     
     if(!state->mock) {
-        int grab_kb = XGrabKeyboard(disp, w, true, GrabModeAsync, GrabModeAsync, CurrentTime);
-        int grab_mouse = XGrabPointer(disp, w, true, X11_ALL_POINTER_EVENTS, GrabModeAsync, GrabModeAsync, w, None, CurrentTime);
-
-        if(grab_kb != GrabSuccess) {
-            fprintf(stderr, "error: Unable to grab keyboard input. Code: %d\n", grab_kb);
-            exit(1);
-        }
-
-        if(grab_mouse != GrabSuccess) {
-            fprintf(stderr, "error: Unable to grab mouse pointer. Code: %d\n", grab_mouse);
-            exit(1);
-        }
-
-        // Makes the window always on top (also hides notifications)
-        XWindowChanges changes;
-        changes.stack_mode = Above;
-
-        XConfigureWindow(disp, w, CWStackMode, &changes);
+        x11_finalize_guardian_window(disp, w);
     }
 
     state->ctx.x11.gc = DefaultGC(disp, screen);
@@ -67,6 +50,28 @@ void x11_init(AppState *state) {
     state->ctx.x11.wm_delete_window = wm_delete_window;
 
     x11_draw(state);
+}
+
+
+void x11_finalize_guardian_window(Display *disp, Window w) {
+    int grab_kb = XGrabKeyboard(disp, w, true, GrabModeAsync, GrabModeAsync, CurrentTime);
+    int grab_mouse = XGrabPointer(disp, w, true, X11_ALL_POINTER_EVENTS, GrabModeAsync, GrabModeAsync, w, None, CurrentTime);
+
+    if(grab_kb != GrabSuccess) {
+        fprintf(stderr, "error: Unable to grab keyboard input. Code: %d\n", grab_kb);
+        exit(1);
+    }
+
+    if(grab_mouse != GrabSuccess) {
+        fprintf(stderr, "error: Unable to grab mouse pointer. Code: %d\n", grab_mouse);
+        exit(1);
+    }
+
+    // Makes the window always on top (also hides notifications)
+    XWindowChanges changes;
+    changes.stack_mode = Above;
+
+    XConfigureWindow(disp, w, CWStackMode, &changes);
 }
 
 void x11_loop(AppState *state) {
@@ -120,6 +125,16 @@ void x11_handle_next_event(AppState *state) {
         if(ev.xkey.keycode == 9 && (state->mock || state->allow_escape)) { // esc. Who knows where keycodes are defined
             exit(0);
         }
+
+        // Text input for password
+
+        char input_buf[8] = {0};
+        KeySym _key_sym = NoSymbol;
+        size_t len = XLookupString(&ev.xkey, input_buf, sizeof(input_buf) - 1, &_key_sym, NULL);
+
+        if(len != 0) {
+            strcat_safe(state->password_buf, input_buf, state->password_max_len);
+        }
     }
 
     if(ev.type == ClientMessage) {
@@ -136,5 +151,6 @@ void x11_draw(AppState *state) {
 
     XSetForeground(ctx.display, ctx.gc, 0xFFFFFF);
 
+    XDrawString(ctx.display, ctx.window, ctx.gc, 0, 20, state->password_buf, strlen(state->password_buf));
     XDrawString(ctx.display, ctx.window, ctx.gc, 100.0 +((float)100.0 * (float)sin(get_time_ms() * 0.01)), 100, "Among us", 8);
 }

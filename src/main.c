@@ -1,12 +1,18 @@
 #include "main.h"
 
 int main(int argc, char **argv) {
+    #ifdef ENABLE_TESTS
+    run_tests();
+    #endif
+
     AppState state = {
         .ctx_type = DISPLAY_CTX_X11,
         .mock = false,
         .allow_escape = true
     };
     
+    state_init_dynamic(&state);
+
     process_args(&state, argc, argv);
     process_warnings(&state);
 

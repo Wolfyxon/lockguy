@@ -9,6 +9,7 @@
 
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
+#include <X11/Xutil.h>
 #include <X11/keysymdef.h>
 
 #include "context.h"
@@ -23,6 +24,7 @@
 )
 
 void x11_init(AppState *state);
+void x11_finalize_guardian_window(Display *disp, Window w);
 void x11_loop(AppState *state);
 void x11_handle_next_event(AppState *state);
 void x11_draw(AppState *state);
