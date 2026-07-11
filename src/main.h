@@ -18,6 +18,3 @@ void process_args(AppState *ctx, int argc, char **argv);
 void process_warnings(AppState *state);
 
 void print_help();
-
-void x11_init(AppState *state);
-void x11_loop(AppState *state);

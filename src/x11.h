@@ -16,6 +16,7 @@
 #include "context.h"
 #include "utils.h"
 #include "auth.h"
+#include "main_loop.h"
 
 #define X11_ALL_POINTER_EVENTS ( \
     ButtonPressMask | ButtonReleaseMask |\
@@ -27,6 +28,6 @@
 
 void x11_init(AppState *state);
 void x11_finalize_guardian_window(Display *disp, Window w);
-void x11_loop(AppState *state);
+void x11_interacted(AppState *state);
+void x11_run_loop(AppState *state);
 void x11_handle_next_event(AppState *state);
-void x11_draw(AppState *state);

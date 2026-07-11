@@ -17,7 +17,7 @@ int main(int argc, char **argv) {
     process_warnings(&state);
 
     x11_init(&state);
-    x11_loop(&state);
+    x11_run_loop(&state);
 }
 
 void process_warnings(AppState *state) {

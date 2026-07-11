@@ -2,6 +2,9 @@
 
 void state_init_dynamic(AppState *state) {
     state_init_password_buf(state);
+    state_init_component_buf(state);
+
+    state->last_input_time = get_time_ms();
 }
 
 void state_init_password_buf(AppState *state) {
@@ -15,6 +18,16 @@ void state_init_password_buf(AppState *state) {
 
     if(state->password_buf == NULL) {
         fprintf(stderr, "error: Unable to allocate memory for password input\n");
+        exit(1);
+    }
+}
+
+void state_init_component_buf(AppState *state) {
+    state->components_len = 0;
+    state->components = malloc(0);
+
+    if(state->components == NULL) {
+        fprintf(stderr, "error: Unable to allocate memory for components\n");
         exit(1);
     }
 }
