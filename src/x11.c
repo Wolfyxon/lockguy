@@ -71,6 +71,29 @@ void x11_finalize_guardian_window(Display *disp, Window w) {
     XConfigureWindow(disp, w, CWStackMode, &changes);
 }
 
+void x11_screen_sleep(AppState *state) {
+    state->screen_off = true;
+    
+    if(state->screen_sleep_mode == SCREEN_SLEEP_BLACK) {
+        XClearWindow(state->ctx.x11.display, state->ctx.x11.window);
+        return;
+    }
+    
+    if(state->screen_sleep_mode == SCREEN_SLEEP_TURN_OFF && !state->mock) {
+        DPMSForceLevel(state->ctx.x11.display, DPMSModeOff);
+    }
+}
+
+void x11_screen_wakeup(AppState *state) {
+    if(!state->screen_off) return;
+
+    state->screen_off = false;
+
+    if(state->screen_sleep_mode == SCREEN_SLEEP_TURN_OFF && !state->mock) {
+        DPMSForceLevel(state->ctx.x11.display, DPMSModeOn);
+    }
+}
+
 void x11_run_loop(AppState *state) {
     X11Context ctx = state->ctx.x11;
 
@@ -98,18 +121,21 @@ void x11_run_loop(AppState *state) {
         );
 
         if(received_events == 0) { // Timeout. No pending events.
-            XWindowAttributes attr = {0};
-            XGetWindowAttributes(ctx.display, ctx.window, &attr);
-            
-            LoopInfo info = {
-                .window_w = attr.width,
-                .window_h = attr.height
-            };
+            if(!state->screen_off) {
+                XWindowAttributes attr = {0};
+                XGetWindowAttributes(ctx.display, ctx.window, &attr);
+                
+                LoopInfo info = {
+                    .window_w = attr.width,
+                    .window_h = attr.height
+                };
 
-            XClearWindow(ctx.display, ctx.window);
-            XSetForeground(ctx.display, ctx.gc, 0xFFFFFF);
+                XClearWindow(ctx.display, ctx.window);
+                XSetForeground(ctx.display, ctx.gc, 0xFFFFFF);
 
-            main_loop(&info, state);
+                main_loop(&info, state);
+                x11_check_sleep(state);
+            }
 
             usleep(1600);
         }
@@ -124,10 +150,19 @@ void x11_run_loop(AppState *state) {
     }
 }
 
+void x11_check_sleep(AppState *state) {
+    if(state->screen_sleep_mode == SCREEN_SLEEP_DISABLED) {
+        return;
+    }
+    
+    if(state->last_input_time + state->screen_timeout_ms < get_time_ms()) {
+        x11_screen_sleep(state);
+    }
+}
+
 void x11_interacted(AppState *state) {
     state->last_input_time = get_time_ms();
-
-    // TODO: Wake up screen
+    x11_screen_wakeup(state);
 }
 
 void x11_handle_next_event(AppState *state) {

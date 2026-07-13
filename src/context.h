@@ -18,6 +18,12 @@ typedef enum {
     DISPLAY_CTX_WAYLAND
 } DisplayContextType;
 
+typedef enum {
+    SCREEN_SLEEP_DISABLED,
+    SCREEN_SLEEP_BLACK,
+    SCREEN_SLEEP_TURN_OFF
+} ScreenSleepMode;
+
 typedef struct {
     Display *display;
     Window window;
@@ -40,6 +46,9 @@ typedef struct {
     Component *components;
     size_t components_len;
     millis_t last_input_time;
+    bool screen_off;
+    millis_t screen_timeout_ms;
+    ScreenSleepMode screen_sleep_mode;
 } AppState;
 
 void state_init_dynamic(AppState *state);

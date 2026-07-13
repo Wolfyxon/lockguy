@@ -2,7 +2,7 @@ OUT_NAME := lockguy
 VERSION := 1.0
 
 CC := gcc
-CFLAGS := -Wall -Os -lm -lX11 -DVERSION='"1.0"' $(CFLAGS)
+CFLAGS := -Wall -Os -lm -lX11 -lXext -DVERSION='"1.0"' $(CFLAGS)
 SRC := src
 
 .PHONY: build clean run test-notif
