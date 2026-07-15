@@ -7,6 +7,7 @@
 #include "utils.h"
 #include "auth.h"
 #include "context.h"
+#include "fallback.h"
 #include "x11.h"
 
 #ifndef VERSION

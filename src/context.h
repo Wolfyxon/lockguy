@@ -39,6 +39,7 @@ typedef union {
 typedef struct {
     DisplayContext ctx;
     DisplayContextType ctx_type;
+    char *fallback_command;
     char *password_buf;
     size_t password_max_len;
     bool mock;
