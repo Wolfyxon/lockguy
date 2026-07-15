@@ -1,12 +1,20 @@
 #include "x11.h"
 
-void x11_init(AppState *state) {
+void x11_init_minimal(AppState *state) {
     Display *disp = XOpenDisplay(NULL);
 
     if(disp == NULL) {
         fprintf(stderr, "error: Unable to open display\n");
         exit(1);
     }
+
+    state->ctx.x11.display = disp;
+}
+
+void x11_init(AppState *state) {
+    x11_init_minimal(state);
+
+    Display *disp = state->ctx.x11.display;
 
     int screen = DefaultScreen(disp);    
 
@@ -44,8 +52,6 @@ void x11_init(AppState *state) {
     }
 
     state->ctx.x11.gc = DefaultGC(disp, screen);
-
-    state->ctx.x11.display = disp;
     state->ctx.x11.window = w;
     state->ctx.x11.wm_delete_window = wm_delete_window;
 }
@@ -216,3 +222,86 @@ void x11_handle_next_event(AppState *state) {
         }
     }
 }
+
+XFontStruct *x11_get_default_font(AppState *state) {
+    Display *disp = state->ctx.x11.display;
+
+    XFontStruct *font = XLoadQueryFont(disp, "fixed");
+
+    if(font == NULL) {
+        fprintf(stderr, "error: Unable to get default font 'fixed'.\n");
+        exit(1);
+    }
+
+    return font;
+}
+
+// TODO: Maybe optimize this breh
+XFontStruct *x11_get_font_with_size(AppState *state, int size) {
+    Display *disp = state->ctx.x11.display;
+    
+    if(size < 0) {
+        size = 0;
+    }
+
+    XFontStruct *exact = x11_get_font_with_size_exact(state, size);
+
+    if(exact) {
+        return exact;
+    }
+
+    const int search_distance = 20;
+
+    XFontStruct *lower = NULL;
+    int dist_lower = 0;
+
+    XFontStruct *upper = NULL;
+    int dist_upper = 0;
+    
+    for(int i = size - 1; (i > size - search_distance) && i > 0; i--) {
+        lower = x11_get_font_with_size_exact(state, size);
+        dist_lower++;
+
+        if(lower != NULL) {
+            break;
+        }
+    }
+
+    for(int i = size + 1; i < size + search_distance; i++) {
+        upper = x11_get_font_with_size_exact(state, size);
+        dist_upper++;
+
+        if(lower != NULL && dist_upper > dist_lower) {
+            if(upper != NULL) {
+                XFreeFont(disp, upper);
+            }
+
+            return lower;
+        }
+        
+        if(upper != NULL) {
+            if(lower == NULL) {
+                return upper;
+            }
+        }
+    }
+    
+    if(upper != NULL && lower == NULL) {
+        return upper;
+    }
+
+    if(lower != NULL && upper == NULL) {
+        return lower;
+    }
+
+    return x11_get_default_font(state);
+}
+
+XFontStruct *x11_get_font_with_size_exact(AppState *state, int size) {
+    Display *disp = state->ctx.x11.display;
+    
+    char query[16] = {0};
+    snprintf(query, sizeof(query) - 1, "*%d*", size);
+
+    return XLoadQueryFont(disp, query);
+} 

@@ -5,7 +5,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <X11/Xlib.h>
+
 #include "utils.h"
+#include "context.h"
+#include "x11.h"
 
 #define exec_test(func) do { \
     printf("-- Running '%s' -- \n", #func); \

@@ -27,12 +27,19 @@
     ButtonMotionMask \
 )
 
+void x11_init_minimal(AppState *state); // for tests
 void x11_init(AppState *state);
 void x11_finalize_guardian_window(Display *disp, Window w);
+
 void x11_interacted(AppState *state);
 void x11_screen_sleep(AppState *state);
 void x11_screen_wakeup(AppState *state);
-void x11_run_loop(AppState *state);
+
 void x11_interacted(AppState *state);
 void x11_check_sleep(AppState *state);
+
+void x11_run_loop(AppState *state);
 void x11_handle_next_event(AppState *state);
+
+XFontStruct *x11_get_font_with_size(AppState *state, int size);
+XFontStruct *x11_get_font_with_size_exact(AppState *state, int size);

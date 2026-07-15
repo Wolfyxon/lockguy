@@ -7,13 +7,59 @@ void test_strcat_safe() {
     strcat_safe(str, "world", sizeof(str));
 
     if(strcmp(str, "hello world") != 0) {
-        fprintf(stderr, "error: '%s' != 'hello world'", str);
+        fprintf(stderr, "error: '%s' != 'hello world'\n", str);
         exit(1);
     }
 }
 
+void test_list_font_sizes() {
+    AppState state = {
+        .ctx_type = DISPLAY_CTX_X11
+    };
+
+    x11_init_minimal(&state);
+
+    size_t found_count = 0;
+
+    printf("Found font sizes:\n");
+
+    for(size_t i = 0; i < 200; i++) {
+        XFontStruct *font = x11_get_font_with_size_exact(&state, i);
+
+        if(font != NULL) {
+            printf("%ld ", i);
+            XFreeFont(state.ctx.x11.display, font);;
+            
+            found_count++;
+        }
+    }
+
+    printf("\nTotal: %ld\n", found_count);
+}
+
+void test_get_fonts() {
+    AppState state = {
+        .ctx_type = DISPLAY_CTX_X11
+    };
+
+    x11_init_minimal(&state);
+
+    for(size_t i = 0; i < 100; i++) {
+        XFontStruct *font = x11_get_font_with_size(&state, i);
+
+        if(font == NULL) {
+            fprintf(stderr, "error: x11_get_font_with_size() failed for size: %ld\n", i);
+            exit(1);
+        }
+        
+        XFreeFont(state.ctx.x11.display, font);
+    }
+
+}
+
 void run_tests() {
     exec_test(test_strcat_safe);
+    //exec_test(test_list_font_sizes);
 
     puts("All tests successful");
     exit(0);
