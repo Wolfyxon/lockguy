@@ -16,4 +16,6 @@ void zero_str(char *str);
 void strcat_safe(char *dest, const char *src, size_t dest_size);
 void strcut_back(char *str, size_t n);
 
+bool strbegins(const char *str, const char *prefix);
+
 millis_t get_time_ms();

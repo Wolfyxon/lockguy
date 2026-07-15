@@ -47,6 +47,10 @@ void strcut_back(char *str, size_t n) {
     }
 }
 
+bool strbegins(const char *str, const char *prefix) {
+    return strncmp(str, prefix, strlen(prefix)) == 0;
+}
+
 millis_t get_time_ms() {
     struct timeval time;
     gettimeofday(&time, NULL);
