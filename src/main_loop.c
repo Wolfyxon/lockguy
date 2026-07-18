@@ -23,11 +23,11 @@ void draw_password_input(LoopInfo *info, AppState *state, Component *comp) {
         float text_x = comp->x * info->window_w;
         float text_y = comp->y * info->window_h;
         
-        float line_w_scale = strlen(state->password_buf) / 1024.0;
-        float line_y = text_y + 10;
+        float line_w_scale = strlen(state->password_buf) / 256.0;
+        float line_y = text_y + 15;
 
         x11_draw_text_centered(state, NULL, NULL, text_x, text_y, "Enter password");
-        
+
         XDrawLine(
             ctx.display, ctx.window, ctx.gc, 
             
