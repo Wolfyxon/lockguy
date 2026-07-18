@@ -219,6 +219,8 @@ void x11_handle_next_event(AppState *state) {
 
     XNextEvent(ctx.display, &ev);
     
+    bool screen_was_off = state->screen_off;
+
     if(ev.type == MotionNotify) {
         x11_interacted(state);
     }
@@ -229,6 +231,11 @@ void x11_handle_next_event(AppState *state) {
         KeySym ks = XLookupKeysym(&ev.xkey, 0);
         
         if(ks == XK_Escape && (state->mock || state->allow_escape)) {
+            if(screen_was_off) {
+                usleep(250000); // wait for screen to wake up
+                                         // If the lockscreen exits when the screen is still off, systemd triggers a configured lockscreen
+            }
+            
             exit(0);
         }
 
