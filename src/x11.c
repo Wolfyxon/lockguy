@@ -260,8 +260,6 @@ XFontStruct *x11_get_font_with_size(AppState *state, int size) {
 }
 
 XFontStruct *x11_try_get_font_with_size(AppState *state, int size) {
-    Display *disp = state->ctx.x11.display;
-    
     if(size < 0) {
         size = 0;
     }
