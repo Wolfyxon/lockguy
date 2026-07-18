@@ -1,5 +1,7 @@
 #pragma once
 
+#include <time.h>
+
 #include "context.h"
 #include "x11.h"
 
@@ -9,4 +11,6 @@ typedef struct {
 } LoopInfo;
 
 void main_loop(LoopInfo *info, AppState *state);
+
+void draw_clock(LoopInfo *info, AppState *state, Component *comp);
 void draw_password_input(LoopInfo *info, AppState *state, Component *comp);

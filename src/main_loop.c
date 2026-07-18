@@ -8,12 +8,29 @@ void main_loop(LoopInfo *info, AppState *state) {
         .pass_inp = {},
     };
 
+    Component clock = {
+        .x = 0.5,
+        .y = 0.4,
+        .type = COMPONENT_CLOCK,
+        .clock = {}
+    };
+
+    draw_clock(info, state, &clock);
     draw_password_input(info, state, &pass_inp);
 }
 
-void init_password_input(AppState *state, Component *comp) {
-    comp->type = COMPONENT_PASSWORD_INPUT;
+void draw_clock(LoopInfo *info, AppState *state, Component *comp) {
+    time_t now;
     
+    time(&now);
+    struct tm *tm_info = localtime(&now);
+
+    char buf[20];
+    strftime(buf, sizeof(buf) - 1, "%H:%M:%S", tm_info);
+
+    if(state->ctx_type == DISPLAY_CTX_X11) {
+        x11_draw_text_centered(state, NULL, NULL, comp->x * info->window_w, comp->y * info->window_h,  buf);
+    }
 }
 
 void draw_password_input(LoopInfo *info, AppState *state, Component *comp) {
