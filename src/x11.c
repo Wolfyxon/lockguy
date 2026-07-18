@@ -49,3 +49,27 @@ void x11_draw_text(AppState *state, XftColor *color, XftFont *font, float x, flo
         strlen(text)
     );
 }
+
+void x11_draw_text_centered(AppState *state, XftColor *color, XftFont *font, float x, float y, const char *text) {
+    Vector2 ext = x11_get_text_extents(state, font, text);
+
+    x11_draw_text(state, color, font, x - ext.x / 2, y - ext.y / 2, text);
+}
+
+Vector2 x11_get_text_extents(AppState *state, XftFont *font, const char *text) {
+    XGlyphInfo ext = {0};
+    XftTextExtentsUtf8(
+        state->ctx.x11.display, 
+        font != NULL ? font : state->ctx.x11.default_font, 
+        (const FcChar8 *)text, 
+        strlen(text), 
+        &ext
+    );
+
+    Vector2 res = {
+        .x = ext.width,
+        .y = ext.height
+    };
+
+    return res;
+}
