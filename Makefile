@@ -12,7 +12,7 @@ FLAGS_TXT_FILE := compile_flags.txt
 
 .PHONY: build prepare test run test-notif cflags
 
-build: prepare-ide
+build: prepare
 	$(CC) $(CFLAGS) $(FILES) -o $(OUT_PREFIX)$(OUT_NAME)
 
 prepare: $(FLAGS_TXT_FILE)
