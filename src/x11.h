@@ -14,6 +14,8 @@
 #include <X11/keysymdef.h>
 #include <X11/extensions/dpms.h>
 
+#include <X11/Xft/Xft.h>
+
 #include "context.h"
 #include "utils.h"
 #include "auth.h"

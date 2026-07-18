@@ -1,5 +1,6 @@
-# Dirs
+# Settings
 .vscode/
+compile_flags.txt
 
 # Files
 /lockguy
