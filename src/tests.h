@@ -1,7 +1,5 @@
 #pragma once
 
-#define ENABLE_TESTS
-
 #ifdef ENABLE_TESTS
 
 #include <stdio.h>
