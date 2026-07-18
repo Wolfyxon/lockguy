@@ -8,7 +8,7 @@
 #include "auth.h"
 #include "context.h"
 #include "fallback.h"
-#include "x11.h"
+#include "x11_runtime.h"
 
 #ifndef VERSION
 #define VERSION "unknown"

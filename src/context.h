@@ -7,6 +7,7 @@
 #include <unistd.h>
 
 #include <X11/Xlib.h>
+#include <X11/Xft/Xft.h>
 
 #include "component_defs.h"
 #include "utils.h"
@@ -27,6 +28,12 @@ typedef enum {
 typedef struct {
     Display *display;
     Window window;
+    int screen;
+    Visual *visual;
+    Colormap colormap;
+    XftDraw *xft_draw;
+    XftFont *default_font;
+    XftColor default_color;
     Atom wm_delete_window;
     GC gc;
     XIC ic;

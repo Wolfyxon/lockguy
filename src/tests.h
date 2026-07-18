@@ -9,6 +9,7 @@
 
 #include "utils.h"
 #include "context.h"
+#include "x11_runtime.h"
 #include "x11.h"
 
 #define exec_test(func) do { \

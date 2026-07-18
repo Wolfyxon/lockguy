@@ -1,6 +1,7 @@
 #pragma once
 
 #include "context.h"
+#include "x11.h"
 
 typedef struct {
     float window_w;

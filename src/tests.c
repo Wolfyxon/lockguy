@@ -12,48 +12,59 @@ void test_strcat_safe() {
     }
 }
 
-void test_list_font_sizes() {
-    AppState state = {
-        .ctx_type = DISPLAY_CTX_X11
-    };
-
+void test_load_font() {
+    AppState state = {};
     x11_init_minimal(&state);
 
-    size_t found_count = 0;
+    XftFont *default_font = x11_load_font(&state, DEFAULT_FONT, DEFAULT_FONT_SIZE);
+    XftFont *other_font = x11_load_font(&state, "Times New Roman", 124);
+    XftFont *fallback = x11_load_font(&state, "uhfhrfoijpoqpokpopodeofu", 432);
 
-    printf("Found font sizes:\n");
-
-    for(size_t i = 0; i < 200; i++) {
-        XFontStruct *font = x11_get_font_with_size_exact(&state, i);
-
-        if(font != NULL) {
-            printf("%ld ", i);
-            XFreeFont(state.ctx.x11.display, font);;
-
-            found_count++;
-        }
+    if(default_font == NULL) {
+        fprintf(stderr, "error: x11_load_font() failed for default\n");
+        exit(1);
     }
 
-    printf("\nTotal: %ld\n", found_count);
+    if(other_font == NULL) {
+        fprintf(stderr, "error: x11_load_font() failed for ''Times New Roman''\n");
+        exit(1);
+    }
+
+    if(fallback == NULL) {
+        fprintf(stderr, "error: x11_load_font() returned NULL instead of fallback for nonexistent font\n");
+        exit(1);
+    }
+
+    Display *disp = state.ctx.x11.display;
+
+    XftFontClose(disp, default_font);
+    XftFontClose(disp, other_font);
+    XftFontClose(disp, fallback);
+
     x11_cleanup(&state);
 }
 
-void test_get_fonts() {
-    AppState state = {
-        .ctx_type = DISPLAY_CTX_X11
-    };
-
+void test_load_color() {
+    AppState state = {};
     x11_init_minimal(&state);
 
-    for(size_t i = 0; i < 100; i++) {
-        XFontStruct *font = x11_try_get_font_with_size(&state, i);
+    char *valid[] = {"#ffffff", "red"};
+    char *mixed[] = {"##", "bababa", "white", "#ff0000", "101001010101"};
 
-        if(font == NULL) {
-            fprintf(stderr, "error: x11_get_font_with_size() failed for size: %ld\n", i);
+    for(size_t i = 0; i < sizeof(valid) / sizeof(char *); i++) {
+        XftColor color = {0};
+
+        if(!x11_try_load_color(&state, valid[i], &color)) {
+            fprintf(stderr, "error: x11_try_load_color() failed for '%s'\n", valid[i]);
             exit(1);
         }
-        
-        XFreeFont(state.ctx.x11.display, font);
+
+        x11_free_color(&state, &color);
+    }
+
+    for(size_t i = 0; i < sizeof(mixed) / sizeof(char *); i++) {
+        XftColor color = x11_load_color(&state, mixed[i]); // will error if font is not found and fallback can't be loaded
+        x11_free_color(&state, &color);
     }
 
     x11_cleanup(&state);
@@ -61,9 +72,9 @@ void test_get_fonts() {
 
 void run_tests() {
     exec_test(test_strcat_safe);
-    exec_test(test_list_font_sizes);
-    exec_test(test_get_fonts);
-
+    exec_test(test_load_font);
+    exec_test(test_load_color);
+    
     puts("All tests successful");
     exit(0);
 }
