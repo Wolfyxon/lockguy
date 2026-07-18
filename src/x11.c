@@ -43,6 +43,10 @@ void x11_init(AppState *state) {
     XSetWMProtocols(disp, w, &wm_delete_window, 1);
     XSelectInput(disp, w, KeyPressMask | PointerMotionMask);
 
+    GC gc = DefaultGC(disp, screen);
+
+    XSetFont(disp, gc, x11_get_font_with_size(state, 64)->fid);
+
     XSetWindowBackground(disp, w, 0x000000);
     XMapWindow(disp, w);
     XRaiseWindow(disp, w);
@@ -51,9 +55,17 @@ void x11_init(AppState *state) {
         x11_finalize_guardian_window(disp, w);
     }
 
-    state->ctx.x11.gc = DefaultGC(disp, screen);
+    state->ctx.x11.gc = gc;
     state->ctx.x11.window = w;
     state->ctx.x11.wm_delete_window = wm_delete_window;
+}
+
+void x11_cleanup(AppState *state) {
+    X11Context ctx = state->ctx.x11;
+
+    XCloseDisplay(ctx.display);
+
+    ctx.display = NULL;
 }
 
 void x11_finalize_guardian_window(Display *disp, Window w) {
@@ -236,65 +248,79 @@ XFontStruct *x11_get_default_font(AppState *state) {
     return font;
 }
 
-// TODO: Maybe optimize this breh
 XFontStruct *x11_get_font_with_size(AppState *state, int size) {
+    XFontStruct *font = x11_try_get_font_with_size(state, size);
+
+    if(font != NULL) {
+        return font;
+    }
+
+    fprintf(stderr, "error: No nearby fonts available for size %d. Using default\n", size);
+    return x11_get_default_font(state);
+}
+
+XFontStruct *x11_try_get_font_with_size(AppState *state, int size) {
     Display *disp = state->ctx.x11.display;
     
     if(size < 0) {
         size = 0;
     }
-
+    
     XFontStruct *exact = x11_get_font_with_size_exact(state, size);
 
     if(exact) {
         return exact;
     }
 
-    const int search_distance = 20;
+    const int search_distance = 100;
 
     XFontStruct *lower = NULL;
-    int dist_lower = 0;
+    int lower_dist = 0;
 
     XFontStruct *upper = NULL;
-    int dist_upper = 0;
-    
-    for(int i = size - 1; (i > size - search_distance) && i > 0; i--) {
-        lower = x11_get_font_with_size_exact(state, size);
-        dist_lower++;
+    int upper_dist = 0;
 
+    for(int i = size - 1; i >= 0 && i > size - search_distance; i--) {
+        lower = x11_get_font_with_size_exact(state, i);
+        
         if(lower != NULL) {
             break;
         }
+
+        lower_dist++;
     }
 
     for(int i = size + 1; i < size + search_distance; i++) {
-        upper = x11_get_font_with_size_exact(state, size);
-        dist_upper++;
-
-        if(lower != NULL && dist_upper > dist_lower) {
-            if(upper != NULL) {
-                XFreeFont(disp, upper);
-            }
-
-            return lower;
+        if(i > lower_dist) {
+            break;
         }
         
+        upper = x11_get_font_with_size_exact(state, i);
+        
         if(upper != NULL) {
-            if(lower == NULL) {
-                return upper;
-            }
+            break;
         }
-    }
-    
-    if(upper != NULL && lower == NULL) {
-        return upper;
+
+        upper_dist++;
     }
 
-    if(lower != NULL && upper == NULL) {
+    if(upper == NULL && lower != NULL) {
         return lower;
     }
 
-    return x11_get_default_font(state);
+    if(lower == NULL && upper != NULL) {
+        return upper;
+    }
+
+    if(lower_dist < upper_dist) {
+        return lower;
+    }
+
+    if(upper_dist < lower_dist) {
+        return upper;
+    }
+    
+    return NULL;
 }
 
 XFontStruct *x11_get_font_with_size_exact(AppState *state, int size) {
@@ -302,6 +328,6 @@ XFontStruct *x11_get_font_with_size_exact(AppState *state, int size) {
     
     char query[16] = {0};
     snprintf(query, sizeof(query) - 1, "*%d*", size);
-
+    
     return XLoadQueryFont(disp, query);
 } 

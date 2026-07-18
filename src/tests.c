@@ -29,12 +29,13 @@ void test_list_font_sizes() {
         if(font != NULL) {
             printf("%ld ", i);
             XFreeFont(state.ctx.x11.display, font);;
-            
+
             found_count++;
         }
     }
 
     printf("\nTotal: %ld\n", found_count);
+    x11_cleanup(&state);
 }
 
 void test_get_fonts() {
@@ -45,7 +46,7 @@ void test_get_fonts() {
     x11_init_minimal(&state);
 
     for(size_t i = 0; i < 100; i++) {
-        XFontStruct *font = x11_get_font_with_size(&state, i);
+        XFontStruct *font = x11_try_get_font_with_size(&state, i);
 
         if(font == NULL) {
             fprintf(stderr, "error: x11_get_font_with_size() failed for size: %ld\n", i);
@@ -55,11 +56,13 @@ void test_get_fonts() {
         XFreeFont(state.ctx.x11.display, font);
     }
 
+    x11_cleanup(&state);
 }
 
 void run_tests() {
     exec_test(test_strcat_safe);
-    //exec_test(test_list_font_sizes);
+    exec_test(test_list_font_sizes);
+    exec_test(test_get_fonts);
 
     puts("All tests successful");
     exit(0);
