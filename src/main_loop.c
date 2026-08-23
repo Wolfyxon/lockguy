@@ -29,7 +29,7 @@ void draw_clock(LoopInfo *info, AppState *state, Component *comp) {
     strftime(buf, sizeof(buf) - 1, "%H:%M:%S", tm_info);
 
     if(state->ctx_type == DISPLAY_CTX_X11) {
-        XftFont *font = x11_load_font(state, "sans-serif", 64); // rather temp
+        XftFont *font = x11_load_font(state, "monospace", 64); // rather temp
 
         x11_draw_text_centered(
             state, 
