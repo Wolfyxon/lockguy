@@ -61,10 +61,10 @@ void draw_password_input(LoopInfo *info, AppState *state, Component *comp) {
             ctx.display, ctx.window, ctx.gc, 
             
             info->offset_x + (comp->x - line_w_scale) * info->window_w, 
-            line_y, 
+            info->offset_y + line_y,
             
-            info->offset_y + (comp->x + line_w_scale) * info->window_w,
-            line_y
+            info->offset_x + (comp->x + line_w_scale) * info->window_w,
+            info->offset_y + line_y
         );
     }
 }
