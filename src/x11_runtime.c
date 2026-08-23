@@ -179,7 +179,7 @@ void x11_run_loop(AppState *state) {
                 x11_check_sleep(state);
             }
 
-            usleep(1600);
+            usleep(8000);
         }
 
         if(!state->mock) {
