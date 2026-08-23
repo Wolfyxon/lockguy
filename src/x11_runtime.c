@@ -296,7 +296,7 @@ void x11_handle_next_event(AppState *state) {
         char input_buf[8] = {0};
         size_t len = XLookupString(&ev.xkey, input_buf, sizeof(input_buf) - 1, NULL, NULL);
 
-        if(len != 0) {
+        if(len != 0 && input_buf[0] != '\x1b') {
             strcat_safe(state->password_buf, input_buf, state->password_max_len);
         }
     }
