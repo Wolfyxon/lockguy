@@ -203,23 +203,29 @@ LoopInfo x11_get_loop_info(AppState *state) {
         .window_h = attr.height
     };
 
-    int monitors_len = 0;
-    XRRMonitorInfo *monitors = XRRGetMonitors(ctx.display, ctx.window, True, &monitors_len);
-    
-    for(size_t i = 0; i < monitors_len; i++) {
-        XRRMonitorInfo m = monitors[i];
+    if(!state->mock) {
+        int monitors_len = 0;
+        XRRMonitorInfo *monitors = XRRGetMonitors(ctx.display, ctx.window, True, &monitors_len);
         
-        if(m.primary) {
-            info.offset_x = m.x;
-            info.offset_y = m.y;
-            info.window_w = m.width;
-            info.window_h = m.height;
-            
-            break;
+        if(monitors == NULL) {
+            return info;
         }
-    }
 
-    XRRFreeMonitors(monitors);
+        for(size_t i = 0; i < monitors_len; i++) {
+            XRRMonitorInfo m = monitors[i];
+            
+            if(m.primary) {
+                info.offset_x = m.x;
+                info.offset_y = m.y;
+                info.window_w = m.width;
+                info.window_h = m.height;
+                
+                break;
+            }
+        }
+
+        XRRFreeMonitors(monitors);
+    }
 
     return info;
 }
