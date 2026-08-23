@@ -22,13 +22,13 @@ test:
 	./$(OUT_NAME)
 
 run: build
-	./$(OUT_NAME)
+	./$(OUT_NAME) --allow-esc
 
 test-notif: build
 	notify-send "Pre notification"
 	sh -c "(sleep 2 && notify-send aaaa)&"
 
-	./$(OUT_NAME)
+	./$(OUT_NAME) --allow-esc
 
 cflags:
 	@echo $(CFLAGS)

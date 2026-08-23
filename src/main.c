@@ -8,7 +8,7 @@ int main(int argc, char **argv) {
     AppState state = {
         .ctx_type = DISPLAY_CTX_X11,
         .mock = false,
-        .allow_escape = true,
+        .allow_escape = false,
         .screen_timeout_ms = 5000,
         .screen_sleep_mode = SCREEN_SLEEP_TURN_OFF
     };
