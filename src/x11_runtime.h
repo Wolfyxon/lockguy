@@ -8,6 +8,7 @@
 #include <unistd.h>
 
 #include <X11/Xlib.h>
+#include <X11/extensions/Xrandr.h>
 #include <X11/Xatom.h>
 #include <X11/Xutil.h>
 #include <X11/keysym.h>
@@ -42,4 +43,5 @@ void x11_interacted(AppState *state);
 void x11_check_sleep(AppState *state);
 
 void x11_run_loop(AppState *state);
+LoopInfo x11_get_loop_info(AppState *state);
 void x11_handle_next_event(AppState *state);

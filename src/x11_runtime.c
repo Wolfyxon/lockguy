@@ -170,13 +170,7 @@ void x11_run_loop(AppState *state) {
 
         if(received_events == 0) { // Timeout. No pending events.
             if(!state->screen_off) {
-                XWindowAttributes attr = {0};
-                XGetWindowAttributes(ctx.display, ctx.window, &attr);
-                
-                LoopInfo info = {
-                    .window_w = attr.width,
-                    .window_h = attr.height
-                };
+                LoopInfo info = x11_get_loop_info(state);
 
                 XClearWindow(ctx.display, ctx.window);
                 XSetForeground(ctx.display, ctx.gc, 0xFFFFFF);
@@ -196,6 +190,38 @@ void x11_run_loop(AppState *state) {
             x11_handle_next_event(state);
         }
     }
+}
+
+LoopInfo x11_get_loop_info(AppState *state) {
+    X11Context ctx = state->ctx.x11;
+    
+    XWindowAttributes attr = {0};
+    XGetWindowAttributes(ctx.display, ctx.window, &attr);
+    
+    LoopInfo info = {
+        .window_w = attr.width,
+        .window_h = attr.height
+    };
+
+    int monitors_len = 0;
+    XRRMonitorInfo *monitors = XRRGetMonitors(ctx.display, ctx.window, True, &monitors_len);
+    
+    for(size_t i = 0; i < monitors_len; i++) {
+        XRRMonitorInfo m = monitors[i];
+        
+        if(m.primary) {
+            info.offset_x = m.x;
+            info.offset_y = m.y;
+            info.window_w = m.width;
+            info.window_h = m.height;
+            
+            break;
+        }
+    }
+
+    XRRFreeMonitors(monitors);
+
+    return info;
 }
 
 void x11_check_sleep(AppState *state) {

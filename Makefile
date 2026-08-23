@@ -3,7 +3,7 @@ VERSION := 1.0
 
 CC := gcc
 
-LIBS := x11 xft xext
+LIBS := x11 xft xext xrandr
 CFLAGS := -Wall -Os -lm $(shell pkg-config --cflags --libs $(LIBS)) -DVERSION='"1.0"' $(CFLAGS)
 SRC := src
 
