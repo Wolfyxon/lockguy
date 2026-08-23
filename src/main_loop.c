@@ -29,7 +29,14 @@ void draw_clock(LoopInfo *info, AppState *state, Component *comp) {
     strftime(buf, sizeof(buf) - 1, "%H:%M:%S", tm_info);
 
     if(state->ctx_type == DISPLAY_CTX_X11) {
-        x11_draw_text_centered(state, NULL, NULL, comp->x * info->window_w, comp->y * info->window_h,  buf);
+        x11_draw_text_centered(
+            state, 
+            NULL, 
+            NULL, 
+            info->offset_x + comp->x * info->window_w, 
+            info->offset_y + comp->y * info->window_h,  
+            buf
+        );
     }
 }
 
@@ -43,15 +50,20 @@ void draw_password_input(LoopInfo *info, AppState *state, Component *comp) {
         float line_w_scale = strlen(state->password_buf) / 256.0;
         float line_y = text_y + 15;
 
-        x11_draw_text_centered(state, NULL, NULL, text_x, text_y, "Enter password");
+        x11_draw_text_centered(
+            state, 
+            NULL, NULL, 
+            info->offset_x + text_x, info->offset_y + text_y, 
+            "Enter password"
+        );
 
         XDrawLine(
             ctx.display, ctx.window, ctx.gc, 
             
-            (comp->x - line_w_scale) * info->window_w, 
+            info->offset_x + (comp->x - line_w_scale) * info->window_w, 
             line_y, 
             
-            (comp->x + line_w_scale) * info->window_w,
+            info->offset_y + (comp->x + line_w_scale) * info->window_w,
             line_y
         );
     }

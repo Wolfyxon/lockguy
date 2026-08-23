@@ -6,6 +6,9 @@
 #include "x11.h"
 
 typedef struct {
+    float offset_x;
+    float offset_y;
+
     float window_w;
     float window_h;
 } LoopInfo;
