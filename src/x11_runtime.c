@@ -231,6 +231,10 @@ LoopInfo x11_get_loop_info(AppState *state) {
 }
 
 void x11_check_sleep(AppState *state) {
+    if(state->mock) {
+        return;
+    }
+
     if(state->screen_sleep_mode == SCREEN_SLEEP_DISABLED) {
         return;
     }
