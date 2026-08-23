@@ -17,6 +17,20 @@ void main_loop(LoopInfo *info, AppState *state) {
 
     draw_clock(info, state, &clock);
     draw_password_input(info, state, &pass_inp);
+
+    // TODO: Universal drawing functions
+
+    if(state->allow_escape) {
+        if(state->ctx_type == DISPLAY_CTX_X11) {
+            x11_draw_text_centered(
+                state,
+                NULL, NULL, 
+                info->offset_x + info->window_w * 0.5, 
+                info->offset_y + info->window_h * 0.1, 
+                "Press 'Esc' to exit lockscreen. Do not use this unless testing."
+            );
+        }
+    }
 }
 
 void draw_clock(LoopInfo *info, AppState *state, Component *comp) {
