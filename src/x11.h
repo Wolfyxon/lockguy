@@ -17,6 +17,7 @@ typedef struct {
 } Vector2;
 
 XftFont *x11_load_font(AppState *state, const char *name, double size); // never returns NULL
+void x11_unload_font(AppState *state, XftFont *font);
 
 bool x11_try_load_color(AppState *state, const char *name, XftColor *res);
 XftColor x11_load_color(AppState *state, const char *name);

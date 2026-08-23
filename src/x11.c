@@ -10,6 +10,12 @@ XftFont *x11_load_font(AppState *state, const char *name, double size) {
     return XftFontOpen(ctx.display, ctx.screen, XFT_FAMILY, XftTypeString, name, XFT_SIZE, XftTypeDouble, size, NULL);
 }
 
+void x11_unload_font(AppState *state, XftFont *font) {
+    X11Context ctx = state->ctx.x11;
+
+    XftFontClose(ctx.display, font);
+}
+
 bool x11_try_load_color(AppState *state, const char *name, XftColor *res) {
     X11Context ctx = state->ctx.x11;
     return XftColorAllocName(ctx.display, ctx.visual, ctx.colormap, name, res);
