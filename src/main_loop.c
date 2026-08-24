@@ -40,7 +40,7 @@ void draw_clock(LoopInfo *info, AppState *state, Component *comp) {
     struct tm *tm_info = localtime(&now);
 
     char buf[20];
-    strftime(buf, sizeof(buf) - 1, "%H:%M:%S", tm_info);
+    strftime(buf, sizeof(buf) - 1, "%H:%M", tm_info);
 
     if(state->ctx_type == DISPLAY_CTX_X11) {
         XftFont *font = x11_load_font(state, "monospace", 64); // rather temp
