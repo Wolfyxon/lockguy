@@ -99,12 +99,22 @@ void x11_cleanup(AppState *state) {
 }
 
 void x11_finalize_guardian_window(Display *disp, Window w) {
-    int grab_kb = XGrabKeyboard(disp, w, true, GrabModeAsync, GrabModeAsync, CurrentTime);
-    int grab_mouse = XGrabPointer(disp, w, true, X11_ALL_POINTER_EVENTS, GrabModeAsync, GrabModeAsync, w, None, CurrentTime);
+    int grab_kb = -1;
+    int grab_mouse = -1;
+
+    while(grab_kb == -1 || grab_kb == AlreadyGrabbed) {
+        grab_kb = XGrabKeyboard(disp, w, true, GrabModeAsync, GrabModeAsync, CurrentTime);
+        usleep(1000);
+    }
 
     if(grab_kb != GrabSuccess) {
         fprintf(stderr, "error: Unable to grab keyboard input. Code: %d\n", grab_kb);
         exit(1);
+    }
+
+    while(grab_mouse == -1 || grab_mouse == AlreadyGrabbed) {
+        grab_mouse = XGrabPointer(disp, w, true, X11_ALL_POINTER_EVENTS, GrabModeAsync, GrabModeAsync, w, None, CurrentTime);
+        usleep(1000);
     }
 
     if(grab_mouse != GrabSuccess) {
