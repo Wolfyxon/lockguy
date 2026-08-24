@@ -27,7 +27,7 @@ int main(int argc, char **argv) {
     process_warnings(&state);
 
     x11_init(&state);
-    x11_run_loop(&state);
+    x11_start_loop(&state);
 }
 
 void check_already_running() {

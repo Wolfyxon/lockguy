@@ -154,7 +154,7 @@ void x11_screen_wakeup(AppState *state) {
     }
 }
 
-void x11_run_loop(AppState *state) {
+void x11_start_loop(AppState *state) {
     X11Context ctx = state->ctx.x11;
 
     // Values here don't seem to matter. They only delay the start of the X11 connection. 
@@ -182,12 +182,7 @@ void x11_run_loop(AppState *state) {
 
         if(received_events == 0) { // Timeout. No pending events.
             if(!state->screen_off) {
-                LoopInfo info = x11_get_loop_info(state);
-
-                XClearWindow(ctx.display, ctx.window);
-                XSetForeground(ctx.display, ctx.gc, 0xFFFFFF);
-
-                main_loop(&info, state);
+                x11_run_main_loop(state);
                 x11_check_sleep(state);
             }
 
@@ -202,6 +197,18 @@ void x11_run_loop(AppState *state) {
             x11_handle_next_event(state);
         }
     }
+}
+
+void x11_run_main_loop(AppState *state) {
+    X11Context ctx = state->ctx.x11;
+    LoopInfo info = x11_get_loop_info(state);
+
+    XClearWindow(ctx.display, ctx.window);
+    XSetForeground(ctx.display, ctx.gc, 0xFFFFFF);
+
+    main_loop(&info, state);
+
+    XFlush(ctx.display);
 }
 
 LoopInfo x11_get_loop_info(AppState *state) {
@@ -289,6 +296,8 @@ void x11_handle_next_event(AppState *state) {
 
         if(ks == XK_Return) {
             state->password_state = PASSWORD_CHECKING;
+            
+            x11_run_main_loop(state);
             
             AuthStatus status = auth_current_user(state->password_buf);
             clear_password(state);

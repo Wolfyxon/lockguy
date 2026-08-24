@@ -42,6 +42,8 @@ void x11_screen_wakeup(AppState *state);
 void x11_interacted(AppState *state);
 void x11_check_sleep(AppState *state);
 
-void x11_run_loop(AppState *state);
+void x11_start_loop(AppState *state);
+void x11_run_main_loop(AppState *state);
+
 LoopInfo x11_get_loop_info(AppState *state);
 void x11_handle_next_event(AppState *state);
