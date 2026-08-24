@@ -68,11 +68,19 @@ void draw_password_input(LoopInfo *info, AppState *state, Component *comp) {
         float line_w_scale = strlen(state->password_buf) / 256.0;
         float line_y = text_y + 15;
 
+        char *title = "Enter password";
+        
+        if(state->password_state == PASSWORD_CHECKING) {
+            title = "Validating...";
+        } else if(state->password_state == PASSWORD_INVALID) {
+            title = "Invalid password";
+        }
+
         x11_draw_text_centered(
             state, 
             NULL, NULL, 
             info->offset_x + text_x, info->offset_y + text_y, 
-            "Enter password"
+            title
         );
 
         XDrawLine(

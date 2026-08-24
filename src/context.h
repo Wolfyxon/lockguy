@@ -25,6 +25,12 @@ typedef enum {
     SCREEN_SLEEP_TURN_OFF
 } ScreenSleepMode;
 
+typedef enum {
+    PASSWORD_NONE,
+    PASSWORD_CHECKING,
+    PASSWORD_INVALID,
+} PasswordState;
+
 typedef struct {
     Display *display;
     Window window;
@@ -49,6 +55,7 @@ typedef struct {
     char *fallback_command;
     char *password_buf;
     size_t password_max_len;
+    PasswordState password_state;
     bool mock;
     bool allow_escape;
     Component *components;

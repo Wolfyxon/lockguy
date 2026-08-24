@@ -288,11 +288,15 @@ void x11_handle_next_event(AppState *state) {
         }
 
         if(ks == XK_Return) {
+            state->password_state = PASSWORD_CHECKING;
+            
             AuthStatus status = auth_current_user(state->password_buf);
             clear_password(state);
 
-            if(status == AUTH_SUCCESS) {                
+            if(status == AUTH_SUCCESS) {
                 exit(0);
+            } else {
+                state->password_state = PASSWORD_INVALID;
             }
 
             return;

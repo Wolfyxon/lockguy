@@ -33,6 +33,8 @@ void state_init_component_buf(AppState *state) {
 }
 
 void clear_password(AppState *state) {
+    state->password_state = PASSWORD_NONE;
+
     for(size_t i = 0; i < state->password_max_len; i++) {
         state->password_buf[i] = '\0';
     }
