@@ -121,6 +121,8 @@ void x11_finalize_guardian_window(Display *disp, Window w) {
 
 void x11_screen_sleep(AppState *state) {
     state->screen_off = true;
+
+    clear_password(state);
     
     if(state->screen_sleep_mode == SCREEN_SLEEP_BLACK) {
         XClearWindow(state->ctx.x11.display, state->ctx.x11.window);
