@@ -8,3 +8,4 @@ compile_flags.txt
 # Formats
 *.tmp
 *.out
+*~
