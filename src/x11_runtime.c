@@ -328,6 +328,7 @@ void x11_handle_next_event(AppState *state) {
 
     if(ev.type == ClientMessage) {
         if(ev.xclient.data.l[0] == ctx.wm_delete_window) {
+            x11_screen_wakeup(state);
             exit(0);
         }
     }
