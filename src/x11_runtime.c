@@ -133,6 +133,7 @@ void x11_screen_sleep(AppState *state) {
     state->screen_off = true;
 
     clear_password(state);
+    XFixesHideCursor(state->ctx.x11.display, state->ctx.x11.window);
     
     if(state->screen_sleep_mode == SCREEN_SLEEP_BLACK) {
         XClearWindow(state->ctx.x11.display, state->ctx.x11.window);
@@ -148,6 +149,8 @@ void x11_screen_wakeup(AppState *state) {
     if(!state->screen_off) return;
 
     state->screen_off = false;
+
+    XFixesShowCursor(state->ctx.x11.display, state->ctx.x11.window);
 
     if(state->screen_sleep_mode == SCREEN_SLEEP_TURN_OFF && !state->mock) {
         DPMSForceLevel(state->ctx.x11.display, DPMSModeOn);

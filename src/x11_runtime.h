@@ -8,12 +8,13 @@
 #include <unistd.h>
 
 #include <X11/Xlib.h>
-#include <X11/extensions/Xrandr.h>
 #include <X11/Xatom.h>
 #include <X11/Xutil.h>
 #include <X11/keysym.h>
 #include <X11/keysymdef.h>
 #include <X11/extensions/dpms.h>
+#include <X11/extensions/Xfixes.h>
+#include <X11/extensions/Xrandr.h>
 #include <X11/Xft/Xft.h>
 
 #include "context.h"
