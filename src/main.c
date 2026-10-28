@@ -104,7 +104,7 @@ void process_args(AppState *state, int argc, char **argv) {
             exit(0);
         } 
         else if(is_flag(arg, "version")) {
-            printf("lockguy v. %s\n", VERSION);  
+            printf("lockguy v. %s\n", PROGRAM_VERSION);  
             exit(0);
         }
         else if(is_flag(arg, "mock")) {

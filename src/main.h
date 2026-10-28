@@ -13,8 +13,8 @@
 #include "fallback.h"
 #include "x11_runtime.h"
 
-#ifndef VERSION
-#define VERSION "unknown"
+#ifndef PROGRAM_VERSION
+#define PROGRAM_VERSION "unknown"
 #endif
 
 int main(int argc, char **argv);

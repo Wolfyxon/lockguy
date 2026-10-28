@@ -4,7 +4,7 @@ VERSION := 1.0
 CC := gcc
 
 LIBS := x11 xft xext xrandr xfixes
-CFLAGS := -Wall -Os -lm $(shell pkg-config --cflags --libs $(LIBS)) -DVERSION='"1.0"' $(CFLAGS)
+CFLAGS := -Wall -Os -lm $(shell pkg-config --cflags --libs $(LIBS)) -DPROGRAM_VERSION='"1.0"' $(CFLAGS)
 SRC := src
 
 FILES := $(SRC)/*.h $(SRC)/*.c
