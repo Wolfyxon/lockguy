@@ -35,6 +35,7 @@ typedef struct {
     Display *display;
     Window window;
     int screen;
+    bool dpms_was_on;
     Visual *visual;
     Colormap colormap;
     XftDraw *xft_draw;

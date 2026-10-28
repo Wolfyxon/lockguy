@@ -15,6 +15,7 @@ void x11_init_minimal(AppState *state) {\
     state->ctx.x11.visual = DefaultVisual(disp, screen);
     state->ctx.x11.colormap = DefaultColormap(disp, screen);
     state->ctx.x11.display = disp;
+    state->ctx.x11.dpms_was_on = true;
 }
 
 void x11_init_xft(AppState *state) {
@@ -186,6 +187,8 @@ void x11_start_loop(AppState *state) {
         );
 
         if(received_events == 0) { // Timeout. No pending events.
+            x11_check_dpms(state);
+
             if(!state->screen_off) {
                 x11_run_main_loop(state);
                 x11_check_sleep(state);
@@ -252,6 +255,23 @@ LoopInfo x11_get_loop_info(AppState *state) {
     }
 
     return info;
+}
+
+void x11_check_dpms(AppState *state) {
+    CARD16 level;
+    BOOL enabled;
+
+    if(!DPMSInfo(state->ctx.x11.display, &level, &enabled)) {
+        return;
+    }
+
+    bool is_on = level == DPMSModeOn;
+
+    if(is_on && !state->ctx.x11.dpms_was_on) {
+        x11_interacted(state);
+    }
+
+    state->ctx.x11.dpms_was_on = is_on;
 }
 
 void x11_check_sleep(AppState *state) {

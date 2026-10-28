@@ -41,6 +41,7 @@ void x11_screen_sleep(AppState *state);
 void x11_screen_wakeup(AppState *state);
 
 void x11_interacted(AppState *state);
+void x11_check_dpms(AppState *state);
 void x11_check_sleep(AppState *state);
 
 void x11_start_loop(AppState *state);
