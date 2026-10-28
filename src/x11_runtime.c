@@ -130,6 +130,8 @@ void x11_finalize_guardian_window(Display *disp, Window w) {
 }
 
 void x11_screen_sleep(AppState *state) {
+    if(state->screen_off) { return; }
+
     state->screen_off = true;
 
     clear_password(state);
