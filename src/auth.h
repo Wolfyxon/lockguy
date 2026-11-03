@@ -5,8 +5,7 @@
 #include "utils.h"
 
 #define USERNAME_ABSOLUTE_MAX 256
-
-#define SHELL_UNSAFE_CHARS "\\\"\'&$() "
+#define SHELL_UNSAFE_CHARS "\\\"\'`&$(){}[]<>|;*~ "
 
 #define AUTH_SHELL "sh -c"
 #define AUTH_SHELL_POST ">/dev/null 2>&1"
