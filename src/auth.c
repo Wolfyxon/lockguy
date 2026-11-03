@@ -28,7 +28,7 @@ AuthStatus auth_user(const char *username, const char *password) {
     }
 
     char cmd[512];
-    snprintf(cmd, sizeof(cmd), "/usr/bin/sh -c '/usr/bin/su %s -c /usr/bin/echo' >/dev/null 2>&1", username);
+    snprintf(cmd, sizeof(cmd), "/usr/bin/sh -c \"/usr/bin/su '%s' -c /usr/bin/echo\" >/dev/null 2>&1", username);
     cmd[sizeof(cmd) - 1] = '\0';
 
     FILE *process_pipe = popen(cmd, "w");
