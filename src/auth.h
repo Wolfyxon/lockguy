@@ -7,11 +7,6 @@
 #define USERNAME_ABSOLUTE_MAX 256
 #define SHELL_UNSAFE_CHARS "\\\"\'`&$(){}[]<>|;*~ "
 
-#define AUTH_SHELL "sh -c"
-#define AUTH_SHELL_POST ">/dev/null 2>&1"
-#define AUTH_BIN "su"
-#define AUTH_CMD_ARGS "-c echo"
-
 typedef enum  {
     AUTH_SUCCESS,
     AUTH_DENIED,
