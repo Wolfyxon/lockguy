@@ -4,7 +4,8 @@ void x11_init_minimal(AppState *state) {\
     Display *disp = XOpenDisplay(NULL);
 
     if(disp == NULL) {
-        fprintf(stderr, "error: Unable to open display\n");
+        fprintf(stderr, "error: Unable to open X11 display.\n");
+        fprintf(stderr, "Make sure the DISPLAY and XAUTHORITY env variables are set and valid.\n");
         exit(1);
     }
 
